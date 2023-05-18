@@ -176,6 +176,8 @@ class LLMHelper:
         sources = "\n".join(set(map(lambda x: x.metadata["source"], result['source_documents'])))
 
         container_sas = self.blob_client.get_container_sas()
+
+        logging.error(f"RISPOSTA {result}") 
         
         result['answer'] = result['answer'].split('SOURCES:')[0].split('Sources:')[0].split('SOURCE:')[0].split('Source:')[0]
         sources = sources.replace('_SAS_TOKEN_PLACEHOLDER_', container_sas)

@@ -134,7 +134,7 @@ try:
 
     col1, col2, col3 = st.columns([1,2,1])
     with col1:
-        st.image(os.path.join('images','microsoft.png'))
+        st.image(os.path.join('images','isp.png'))
 
     col1, col2, col3 = st.columns([2,2,2])
     with col1:
@@ -142,7 +142,7 @@ try:
     with col3:
         with st.expander("Settings"):
             model = st.selectbox("OpenAI GPT-3 Model",[os.environ['OPENAI_ENGINE']])
-            st.tokens_response = st.slider("Tokens response length", 100, 500, 400)
+            st.tokens_response = st.slider("Tokens response length", 100, 4000, 500)
             st.slider("Temperature", min_value=0.0, max_value=1.0, step=0.1, key='custom_temperature')
             st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt, placeholder= custom_prompt_placeholder,help=custom_prompt_help, height=150)
             st.selectbox("Language", [None] + list(available_languages.keys()), key='translation_language')
