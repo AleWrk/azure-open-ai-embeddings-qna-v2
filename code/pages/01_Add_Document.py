@@ -48,7 +48,7 @@ def upload_file(bytes_data: bytes, file_name: str):
     st.session_state['file_url'] = llm_helper.blob_client.upload_file(bytes_data, st.session_state['filename'], content_type=content_type+charset)
 
 
-try:
+try:    
     # Set page layout to wide screen and menu item
     menu_items = {
 	'Get help': None,

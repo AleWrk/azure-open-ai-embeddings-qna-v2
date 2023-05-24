@@ -88,7 +88,6 @@ def get_languages():
     return llm_helper.translator.get_available_languages()
 
 try:
-
     default_prompt = "" 
     default_question = "" 
     default_answer = ""

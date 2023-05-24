@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import logging
 import re
 import hashlib
+from utilities.NoSSLVerifyWebBaseLoader import NoSSLVerifyWebBaseLoader
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.llms import AzureOpenAI
@@ -80,7 +81,10 @@ class LLMHelper:
         
         self.chunk_size = int(os.getenv('CHUNK_SIZE', 500))
         self.chunk_overlap = int(os.getenv('CHUNK_OVERLAP', 100))
-        self.document_loaders: BaseLoader = WebBaseLoader if document_loaders is None else document_loaders
+        
+        #self.document_loaders: BaseLoader = WebBaseLoader if document_loaders is None else document_loaders
+        self.document_loaders: BaseLoader = NoSSLVerifyWebBaseLoader() if document_loaders is None else document_loaders
+
         self.text_splitter: TextSplitter = TokenTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap) if text_splitter is None else text_splitter
         self.embeddings: OpenAIEmbeddings = OpenAIEmbeddings(model=self.model, chunk_size=1) if embeddings is None else embeddings
         if self.deployment_type == "Chat":
