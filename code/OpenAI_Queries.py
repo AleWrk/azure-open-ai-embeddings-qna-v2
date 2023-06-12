@@ -161,8 +161,8 @@ try:
                 "Tokens response length", 100, 1000, 500)
             st.slider("Temperature", min_value=0.0, max_value=1.0,
                       step=0.1, key='custom_temperature')
-            st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt,
-                         placeholder=custom_prompt_placeholder, help=custom_prompt_help, height=150)
+            #st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt,
+            #             placeholder=custom_prompt_placeholder, help=custom_prompt_help, height=150)
             st.selectbox("Language", [
                          None] + list(available_languages.keys()), key='translation_language')
     
