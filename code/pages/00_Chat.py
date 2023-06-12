@@ -1,6 +1,19 @@
 import streamlit as st
 from streamlit_chat import message
+import os
 from utilities.helper import LLMHelper
+
+col1, col2, col3 = st.columns([2, 2, 2])
+with col3:
+    with st.expander("Settings"):
+        st.tokens_response = st.slider(
+            "Tokens response length", 100, 1000, 500)
+        st.slider("Temperature", min_value=0.0, max_value=1.0,
+                    step=0.1, key='custom_temperature')
+        #st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt,
+        #             placeholder=custom_prompt_placeholder, help=custom_prompt_help, height=150)
+        #st.selectbox("Language", [
+        #                None] + list(available_languages.keys()), key='translation_language')
 
 def clear_text_input():
     st.session_state['question'] = st.session_state['input']
@@ -59,11 +72,10 @@ js = f"""
     function scroll(dummy_var_to_force_repeat_execution){{
         var textAreas = parent.document.querySelectorAll('section.main');
         for (let index = 0; index < textAreas.length; index++) {{
-            textAreas[index].style.color = 'red'
             textAreas[index].scrollTop = textAreas[index].scrollHeight;
         }}
     }}
-    scroll({len(st.session_state['chat_history'])})
+    scroll({len(st.session_state['input'])})
 </script>
 """
 st.components.v1.html(js)
