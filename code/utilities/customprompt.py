@@ -3,7 +3,8 @@ from langchain.prompts import PromptTemplate
 
 template = """{summaries}
 Rispondi alla domanda in maniera discorsiva e completa usando solo le informazioni presenti nel testo sopra. 
-Dopo ogni frase indica la fonte che hai utilizzato nel formato ##FONTE:
+Al termine della risposta elenca le fonti utilizzate con un elenco numerato.
+Nella riposta, accanto ad ogni frase indica il numero della fonte utilizzata nel formato [n].
 Se non trovi la risposta dì soltanto che non hai trovato informazioni nella documentazione indicizzata.
 Question: {question}
 Answer:"""

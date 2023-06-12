@@ -181,17 +181,23 @@ try:
         st.session_state['question'] = question
         st.session_state['question'], st.session_state['response'], st.session_state[
             'context'], sources = llm_helper.get_semantic_answer_lang_chain(question, [])
-        response = st.session_state['response'].split('##FONTI:')
-        if response[0][-1]=='(':
-            st.markdown(response[0][:-1])
-        else:
-            st.markdown(response[0])
-        if len(response) > 1:
-            responses = []
-            for index, resp in enumerate(response[1].split()):
-                responses.append((resp[:-1], str(index+1), "#b3d6fb"))
-                responses.append(" ")
-            annotated_text(responses)
+        response = st.session_state['response']
+        st.markdown(response)
+        #if response[0][-1]=='(':
+        #    st.markdown(response[0][:-1])
+        #else:
+        #    st.markdown(response[0])
+        #logging.error(response)
+        #if len(response) > 0:
+        #    responses = [response[0]]
+        #    for index, resp in enumerate(response[1].split()):
+        #        responses.append(" ")
+        #        if (index % 2) == 0:
+        #            responses.append((resp, str(index+1), "#b3d6fb"))
+        #        else:
+        #            responses.append(resp)
+        #    logging.error(responses)
+        #    annotated_text(responses)
         st.divider()
         st.markdown(f'\n\n**Testi consultati dal modello:**\n')
         for index, source in enumerate(sources.split()):
