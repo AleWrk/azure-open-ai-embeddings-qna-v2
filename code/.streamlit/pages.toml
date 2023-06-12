@@ -1,0 +1,24 @@
+[[pages]]
+path = "OpenAI_Queries.py"
+name = "Generative Search"
+icon = ":mag:"
+
+[[pages]]
+path = "pages/00_Chat.py"
+name = "Generative Chatbot"
+icon = ":left_speech_bubble:"
+
+[[pages]]
+path = "pages/01_Add_Document.py"
+name = "Caricamento Documenti"
+icon = ":book:"
+
+[[pages]]
+path = "pages/03_Document_Viewer.py"
+name = "Elenco Documenti Caricati"
+icon = ":file_folder:"
+
+[[pages]]
+path = "pages/04_Index_Management.py"
+name = "Gestione Indice Vector DB"
+icon = ":sparkles:"

@@ -1,17 +1,26 @@
-from dotenv import load_dotenv
-load_dotenv()
-
-import streamlit as st
+import base64
+import logging
 import os
 import traceback
+import logging
+from pathlib import Path
+from annotated_text import annotated_text
+
+import streamlit as st
+from dotenv import load_dotenv
+from st_pages import add_page_title, show_pages_from_config
 from utilities.helper import LLMHelper
 
-import logging
-logger = logging.getLogger('azure.core.pipeline.policies.http_logging_policy').setLevel(logging.WARNING)
+load_dotenv()
+
+
+logger = logging.getLogger(
+    'azure.core.pipeline.policies.http_logging_policy').setLevel(logging.WARNING)
+
 
 def check_deployment():
     # Check if the deployment is working
-    #\ 1. Check if the llm is working
+    # \ 1. Check if the llm is working
     try:
         llm_helper = LLMHelper()
         llm_helper.get_completion("Generate a joke!")
@@ -24,7 +33,7 @@ def check_deployment():
             Then restart your application.
             """)
         st.error(traceback.format_exc())
-    #\ 2. Check if the embedding is working
+    # \ 2. Check if the embedding is working
     try:
         llm_helper = LLMHelper()
         llm_helper.embeddings.embed_documents(texts=["This is a test"])
@@ -35,7 +44,7 @@ def check_deployment():
             Then restart your application.
             """)
         st.error(traceback.format_exc())
-    #\ 3. Check if the translation is working
+    # \ 3. Check if the translation is working
     try:
         llm_helper = LLMHelper()
         llm_helper.translator.translate("This is a test", "it")
@@ -46,7 +55,7 @@ def check_deployment():
             Then restart your application.  
             """)
         st.error(traceback.format_exc())
-    #\ 4. Check if the Redis is working with previous version of data
+    # \ 4. Check if the Redis is working with previous version of data
     try:
         llm_helper = LLMHelper()
         if llm_helper.vector_store.check_existing_index("embeddings-index"):
@@ -81,15 +90,24 @@ def check_variables_in_prompt():
         Reverting to default prompt.  
         """)
         st.session_state.custom_prompt = ""
-    
+
+def read_markdown_file(markdown_file):
+    return Path(markdown_file).read_text()
+
+@st.cache_resource()
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 @st.cache_data()
 def get_languages():
     return llm_helper.translator.get_available_languages()
 
+
 try:
-    default_prompt = "" 
-    default_question = "" 
+    default_prompt = ""
+    default_question = ""
     default_answer = ""
 
     if 'question' not in st.session_state:
@@ -103,63 +121,90 @@ try:
     if 'custom_prompt' not in st.session_state:
         st.session_state['custom_prompt'] = ""
     if 'custom_temperature' not in st.session_state:
-        st.session_state['custom_temperature'] = float(os.getenv("OPENAI_TEMPERATURE", 0.7))
+        st.session_state['custom_temperature'] = float(
+            os.getenv("OPENAI_TEMPERATURE", 0.7))
+        
 
     # Set page layout to wide screen and menu item
     menu_items = {
-	'Get help': None,
-	'Report a bug': None,
-	'About': '''
+        'Get help': None,
+        'Report a bug': None,
+        'About': '''
 	 ## Embeddings App
 	 Embedding testing application.
 	'''
     }
     st.set_page_config(layout="wide", menu_items=menu_items)
 
-    llm_helper = LLMHelper(custom_prompt=st.session_state.custom_prompt, temperature=st.session_state.custom_temperature)
-
+    llm_helper = LLMHelper(custom_prompt=st.session_state.custom_prompt,
+                           temperature=st.session_state.custom_temperature)
+    
     # Get available languages for translation
     available_languages = get_languages()
 
     # Custom prompt variables
     custom_prompt_placeholder = """{summaries}  
-    Please reply to the question using only the text above.  
+    Rispondi in maniera discorsiva e completa alla domanda usando solo le informazioni presenti nel testo sopra. Se non riesci a trovarla, rispondi "Non presente nel testo".  
     Question: {question}  
     Answer:"""
     custom_prompt_help = """You can configure a custom prompt by adding the variables {summaries} and {question} to the prompt.  
     {summaries} will be replaced with the content of the documents retrieved from the VectorStore.  
     {question} will be replaced with the user's question.
-        """
-
-    col1, col2, col3 = st.columns([1,2,1])
-    with col1:
-        st.image(os.path.join('images','isp.png'))
-
-    col1, col2, col3 = st.columns([2,2,2])
-    with col1:
-        st.button("Check deployment", on_click=check_deployment)
+        """    
+    col1, col2, col3 = st.columns([2, 2, 2])
     with col3:
         with st.expander("Settings"):
-            model = st.selectbox("OpenAI GPT-3 Model",[os.environ['OPENAI_ENGINE']])
-            st.tokens_response = st.slider("Tokens response length", 100, 1000, 500)
-            st.slider("Temperature", min_value=0.0, max_value=1.0, step=0.1, key='custom_temperature')
-            st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt, placeholder= custom_prompt_placeholder,help=custom_prompt_help, height=150)
-            st.selectbox("Language", [None] + list(available_languages.keys()), key='translation_language')
+            st.button("Check deployment", on_click=check_deployment)
+            model = st.selectbox("OpenAI GPT-3 Model",
+                                 [os.environ['OPENAI_ENGINE']])
+            st.tokens_response = st.slider(
+                "Tokens response length", 100, 1000, 500)
+            st.slider("Temperature", min_value=0.0, max_value=1.0,
+                      step=0.1, key='custom_temperature')
+            st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt,
+                         placeholder=custom_prompt_placeholder, help=custom_prompt_help, height=150)
+            st.selectbox("Language", [
+                         None] + list(available_languages.keys()), key='translation_language')
+    
+    show_pages_from_config()
+    bin_str = get_base64_of_bin_file(os.path.join('images', 'logo_isl.png'))
+    st.markdown(read_markdown_file("markdown/styles.md") % bin_str, unsafe_allow_html=True)
 
-    question = st.text_input("OpenAI Semantic Answer", default_question)
+    st.title("Generative Search")
+    st.header("In questa sezione è possibile effettuare una ricerca all'interno della knowledge base. La risposta sarà generata dal modello sulla base dei documenti elencati.\n\n")
+    st.write("")
 
+    question = st.text_input("Inserire il testo da ricercare e premere invio", default_question)    
+
+    
     if question != '':
         st.session_state['question'] = question
-        st.session_state['question'], st.session_state['response'], st.session_state['context'], sources = llm_helper.get_semantic_answer_lang_chain(question, [])
-        st.markdown("Answer:" + st.session_state['response'])
-        st.markdown(f'\n\nSources: {sources}') 
-        with st.expander("Question and Answer Context"):
-            st.markdown(st.session_state['context'].replace('$', '\$'))
-            st.markdown(f"SOURCES: {sources}") 
+        st.session_state['question'], st.session_state['response'], st.session_state[
+            'context'], sources = llm_helper.get_semantic_answer_lang_chain(question, [])
+        response = st.session_state['response'].split('##FONTI:')
+        if response[0][-1]=='(':
+            st.markdown(response[0][:-1])
+        else:
+            st.markdown(response[0])
+        if len(response) > 1:
+            responses = []
+            for index, resp in enumerate(response[1].split()):
+                responses.append((resp[:-1], str(index+1), "#b3d6fb"))
+                responses.append(" ")
+            annotated_text(responses)
+        st.divider()
+        st.markdown(f'\n\n**Testi consultati dal modello:**\n')
+        for index, source in enumerate(sources.split()):
+            st.markdown(f'{index+1}: {source}') 
+        st.divider()
+        with st.expander("Testo passato nel contesto"):
+            st.markdown(st.session_state['context'].replace('$', '\$'))            
+            st.markdown(f"FONTI: {sources}")
 
     if st.session_state['translation_language'] and st.session_state['translation_language'] != '':
         st.write(f"Translation to other languages, 翻译成其他语言, النص باللغة العربية")
-        st.write(f"{llm_helper.translator.translate(st.session_state['response'], available_languages[st.session_state['translation_language']])}")		
-		
+        st.write(
+            f"{llm_helper.translator.translate(st.session_state['response'], available_languages[st.session_state['translation_language']])}")
+
 except Exception:
     st.error(traceback.format_exc())

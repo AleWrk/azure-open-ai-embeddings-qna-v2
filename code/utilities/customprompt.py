@@ -2,9 +2,9 @@
 from langchain.prompts import PromptTemplate
 
 template = """{summaries}
-Please reply to the question using only the information present in the text above. 
-Include references to the sources you used to create the answer if those are relevant ("SOURCES"). 
-If you can't find it, reply politely that the information is not in the knowledge base.
+Rispondi alla domanda in maniera discorsiva e completa usando solo le informazioni presenti nel testo sopra. 
+Dopo ogni frase indica la fonte che hai utilizzato nel formato ##FONTE:
+Se non trovi la risposta dì soltanto che non hai trovato informazioni nella documentazione indicizzata.
 Question: {question}
 Answer:"""
 

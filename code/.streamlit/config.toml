@@ -1,0 +1,9 @@
+[theme]
+base="light"
+primaryColor="#258900"
+backgroundColor="#FFFFFF"
+secondaryBackgroundColor="#efefef"
+textColor="#0D2901"
+
+[logger]
+level = "info"

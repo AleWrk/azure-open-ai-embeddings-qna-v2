@@ -82,8 +82,8 @@ class LLMHelper:
         self.chunk_size = int(os.getenv('CHUNK_SIZE', 500))
         self.chunk_overlap = int(os.getenv('CHUNK_OVERLAP', 100))
         
-        #self.document_loaders: BaseLoader = WebBaseLoader if document_loaders is None else document_loaders
-        self.document_loaders: BaseLoader = NoSSLVerifyWebBaseLoader() if document_loaders is None else document_loaders
+        self.document_loaders: BaseLoader = WebBaseLoader if document_loaders is None else document_loaders
+        #self.document_loaders: BaseLoader = NoSSLVerifyWebBaseLoader() if document_loaders is None else document_loaders
 
         self.text_splitter: TextSplitter = TokenTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap) if text_splitter is None else text_splitter
         self.embeddings: OpenAIEmbeddings = OpenAIEmbeddings(model=self.model, chunk_size=1) if embeddings is None else embeddings
@@ -167,6 +167,7 @@ class LLMHelper:
 
     def get_semantic_answer_lang_chain(self, question, chat_history):
         question_generator = LLMChain(llm=self.llm, prompt=CONDENSE_QUESTION_PROMPT, verbose=False)
+        logging.error(self.prompt)
         doc_chain = load_qa_with_sources_chain(self.llm, chain_type="stuff", verbose=True, prompt=self.prompt)
         chain = ConversationalRetrievalChain(
             retriever=self.vector_store.as_retriever(),
@@ -180,11 +181,14 @@ class LLMHelper:
         sources = "\n".join(set(map(lambda x: x.metadata["source"], result['source_documents'])))
 
         container_sas = self.blob_client.get_container_sas()
-
-        logging.error(f"RISPOSTA {result}") 
         
-        result['answer'] = result['answer'].split('SOURCES:')[0].split('Sources:')[0].split('SOURCE:')[0].split('Source:')[0]
+        result['answer'] = result['answer']
         sources = sources.replace('_SAS_TOKEN_PLACEHOLDER_', container_sas)
+
+        logging.error("CIAOOOOO")
+        logging.error(f"TOTALE {result}")
+        logging.error(f"RISPOSTA {result['answer']}")
+        logging.error(f"DOCS {sources}") 
 
         return question, result['answer'], context, sources
 
