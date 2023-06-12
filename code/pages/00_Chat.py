@@ -33,7 +33,10 @@ def search_from_data():
         st.session_state['source_documents'].append(sources)
         st.session_state['question']=""
     if st.session_state['chat_history']:
-        for i in range(len(st.session_state['chat_history'])-1, -1, -1):
+        #for i in range(len(st.session_state['chat_history'])-1, -1, -1):
+        #print(st.session_state['chat_history'])
+        for i in range(len(st.session_state['chat_history'])):
+            print(st.session_state['chat_history'][i])
             message(st.session_state['chat_history'][i][0], is_user=True, key=str(i) + '_user')
             message(st.session_state['chat_history'][i][1], key=str(i))
             st.markdown(f'\n\nSources: {st.session_state["source_documents"][i]}')
@@ -51,4 +54,16 @@ valueent = st.text_input("You: ", placeholder="type your question", key="input")
 btnsearch = st.button("Search", key="search_chat", on_click=search_from_data)
 clear_chat = st.button("Clear chat", key="clear_chat", on_click=clear_chat_data)
 
-
+js = f"""
+<script>
+    function scroll(dummy_var_to_force_repeat_execution){{
+        var textAreas = parent.document.querySelectorAll('section.main');
+        for (let index = 0; index < textAreas.length; index++) {{
+            textAreas[index].style.color = 'red'
+            textAreas[index].scrollTop = textAreas[index].scrollHeight;
+        }}
+    }}
+    scroll({len(st.session_state['chat_history'])})
+</script>
+"""
+st.components.v1.html(js)
