@@ -167,8 +167,7 @@ try:
                          None] + list(available_languages.keys()), key='translation_language')
     
     show_pages_from_config()
-    bin_str = get_base64_of_bin_file(os.path.join('images', 'logo_isl.png'))
-    st.markdown(read_markdown_file("markdown/styles.md") % bin_str, unsafe_allow_html=True)
+    st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
 
     st.title("Generative Search")
     st.header("In questa sezione è possibile effettuare una ricerca all'interno della knowledge base. La risposta sarà generata dal modello sulla base dei documenti elencati.\n\n")
@@ -182,26 +181,11 @@ try:
         st.session_state['question'], st.session_state['response'], st.session_state[
             'context'], sources = llm_helper.get_semantic_answer_lang_chain(question, [])
         response = st.session_state['response']
-        st.markdown(response)
-        #if response[0][-1]=='(':
-        #    st.markdown(response[0][:-1])
-        #else:
-        #    st.markdown(response[0])
-        #logging.error(response)
-        #if len(response) > 0:
-        #    responses = [response[0]]
-        #    for index, resp in enumerate(response[1].split()):
-        #        responses.append(" ")
-        #        if (index % 2) == 0:
-        #            responses.append((resp, str(index+1), "#b3d6fb"))
-        #        else:
-        #            responses.append(resp)
-        #    logging.error(responses)
-        #    annotated_text(responses)
+        st.markdown(response)        
         st.divider()
         st.markdown(f'\n\n**Testi consultati dal modello:**\n')
         for index, source in enumerate(sources.split()):
-            st.markdown(f'{index+1}: {source}') 
+            annotated_text((source, str(index+1), "#b3d6fb"))
         st.divider()
         with st.expander("Testo passato nel contesto"):
             st.markdown(st.session_state['context'].replace('$', '\$'))            

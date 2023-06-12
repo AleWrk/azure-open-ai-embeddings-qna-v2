@@ -183,12 +183,7 @@ class LLMHelper:
         container_sas = self.blob_client.get_container_sas()
         
         result['answer'] = result['answer']
-        sources = sources.replace('_SAS_TOKEN_PLACEHOLDER_', container_sas)
-
-        logging.error("CIAOOOOO")
-        logging.error(f"TOTALE {result}")
-        logging.error(f"RISPOSTA {result['answer']}")
-        logging.error(f"DOCS {sources}") 
+        sources = sources.replace('_SAS_TOKEN_PLACEHOLDER_', container_sas).replace('.pdf.txt', '.pdf').replace('/converted', '')        
 
         return question, result['answer'], context, sources
 
