@@ -6,22 +6,25 @@ from utilities.helper import LLMHelper
 
 llm_helper = LLMHelper()
 
-def applycnfg(toklen,tmpe):
-    #print(toklen)
-    llm_helper = LLMHelper(temperature=tmpe, max_tokens=toklen)
+if 'is_exp' not in st.session_state:
+    st.session_state['is_exp'] = False
+
+
+
+def applycnfg():
+    st.session_state['is_exp'] = False
+     
+    print(st.session_state['is_exp'])
+    llm_helper = LLMHelper(max_tokens=st.session_state['tklen'])
+
 
 col1, col2, col3 = st.columns([2, 2, 2])
 with col3:
-    with st.expander("Settings"):
-        toklen=st.tokens_response = st.slider(
+    with st.expander("Settings", expanded=st.session_state['is_exp']):
+        st.session_state['tklen'] =st.tokens_response = st.slider(
             "Tokens response length", 100, 1000, 500)
-        tmpe=st.slider("Temperature", min_value=0.0, max_value=1.0,
-                    step=0.1)
-        #st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt,
-        #             placeholder=custom_prompt_placeholder, help=custom_prompt_help, height=150)
-        #st.selectbox("Language", [
-        #                None] + list(available_languages.keys()), key='translation_language')
-        aplychng = st.button("Apply", key="apply_chat", on_click=applycnfg(toklen,tmpe))
+        aplychng = st.button("Apply", key="apply_chat", on_click=applycnfg)
+
 
 def clear_text_input():
     st.session_state['question'] = st.session_state['input']
@@ -62,13 +65,7 @@ def search_from_data():
             print(st.session_state['chat_history'][i])
             message(st.session_state['chat_history'][i][0], is_user=True, key=str(i) + '_user')
             message(st.session_state['chat_history'][i][1], key=str(i))
-            st.markdown(f'\n\nSources: {st.session_state["source_documents"][i]}')
-            
-    
-
-    
-
-
+            #st.markdown(f'\n\nSources: {st.session_state["source_documents"][i]}')
 
 
 # Chat 
@@ -85,7 +82,7 @@ js = f"""
             textAreas[index].scrollTop = textAreas[index].scrollHeight;
         }}
     }}
-    scroll({len(st.session_state['input'])})
+    scroll({len(st.session_state['chat_history'])})
 </script>
 """
 st.components.v1.html(js)
