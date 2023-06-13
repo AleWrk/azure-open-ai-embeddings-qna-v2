@@ -14,7 +14,7 @@ if 'is_exp' not in st.session_state:
 def applycnfg():
     st.session_state['is_exp'] = False
      
-    print(st.session_state['is_exp'])
+    #print(st.session_state['is_exp'])
     llm_helper = LLMHelper(max_tokens=st.session_state['tklen'])
 
 

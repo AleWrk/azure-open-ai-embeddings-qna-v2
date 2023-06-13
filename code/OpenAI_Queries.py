@@ -151,21 +151,42 @@ try:
     {summaries} will be replaced with the content of the documents retrieved from the VectorStore.  
     {question} will be replaced with the user's question.
         """    
-    col1, col2, col3 = st.columns([2, 2, 2])
-    with col3:
-        with st.expander("Settings"):
-            st.button("Check deployment", on_click=check_deployment)
-            model = st.selectbox("OpenAI GPT-3 Model",
-                                 [os.environ['OPENAI_ENGINE']])
-            st.tokens_response = st.slider(
-                "Tokens response length", 100, 1000, 500)
-            st.slider("Temperature", min_value=0.0, max_value=1.0,
-                      step=0.1, key='custom_temperature')
+    
+    #col1, col2, col3 = st.columns([2, 2, 2])
+    #with col3:
+    #    with st.expander("Settings"):
+    #        st.button("Check deployment", on_click=check_deployment)
+    #        model = st.selectbox("OpenAI GPT-3 Model",
+    #                             [os.environ['OPENAI_ENGINE']])
+    #        st.tokens_response = st.slider(
+    #            "Tokens response length", 100, 1000, 500)
+    #        st.slider("Temperature", min_value=0.0, max_value=1.0,
+    #                  step=0.1, key='custom_temperature')
             #st.text_area("Custom Prompt", key='custom_prompt', on_change=check_variables_in_prompt,
             #             placeholder=custom_prompt_placeholder, help=custom_prompt_help, height=150)
-            st.selectbox("Language", [
-                         None] + list(available_languages.keys()), key='translation_language')
+    #        st.selectbox("Language", [
+    #                     None] + list(available_languages.keys()), key='translation_language')
     
+
+    def applycnfg():
+        st.session_state['is_exp'] = False
+        
+        #print(st.session_state['is_exp'])
+        llm_helper = LLMHelper(max_tokens=st.session_state['tklen'])
+
+
+    if 'is_exp' not in st.session_state:
+        st.session_state['is_exp'] = False
+
+
+    col1, col2, col3 = st.columns([2, 2, 2])
+    with col3:
+        with st.expander("Settings", expanded=st.session_state['is_exp']):
+            st.session_state['tklen'] =st.tokens_response = st.slider(
+                "Tokens response length", 100, 1000, 500)
+            aplychng = st.button("Apply", key="apply_chat", on_click=applycnfg)
+
+
     show_pages_from_config()
     st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
 
@@ -184,6 +205,7 @@ try:
         st.markdown(response)        
         st.divider()
         st.markdown(f'\n\n**Testi consultati dal modello:**\n')
+        
         for index, source in enumerate(sources.split()):
             annotated_text((source, str(index+1), "#b3d6fb"))
         st.divider()
@@ -191,10 +213,11 @@ try:
             st.markdown(st.session_state['context'].replace('$', '\$'))            
             st.markdown(f"FONTI: {sources}")
 
-    if st.session_state['translation_language'] and st.session_state['translation_language'] != '':
-        st.write(f"Translation to other languages, 翻译成其他语言, النص باللغة العربية")
-        st.write(
-            f"{llm_helper.translator.translate(st.session_state['response'], available_languages[st.session_state['translation_language']])}")
+
+    #if st.session_state['translation_language'] and st.session_state['translation_language'] != '':
+    #    st.write(f"Translation to other languages, 翻译成其他语言, النص باللغة العربية")
+    #    st.write(
+    #        f"{llm_helper.translator.translate(st.session_state['response'], available_languages[st.session_state['translation_language']])}")
 
 except Exception:
     st.error(traceback.format_exc())
