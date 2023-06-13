@@ -104,8 +104,6 @@ def get_base64_of_bin_file(bin_file):
 def get_languages():
     return llm_helper.translator.get_available_languages()
 
-def search_from_data():
-    search()
 
 try:
     default_question = ""
@@ -186,13 +184,16 @@ try:
     st.header("In questa sezione è possibile effettuare una ricerca all'interno della knowledge base. La risposta sarà generata dal modello sulla base dei documenti elencati.\n\n")
     st.write("")
 
+    def search_from_data(qst):
+        st.session_state['question']=qst
+    
     col1, col2 = st.columns([2, 1])
     with col1:
         question = st.text_input("Inserire il testo da ricercare e premere invio", default_question)    
     with col2:
-        st.button("Search", key="search_chat", on_click=search_from_data)
+        st.button("Search", key="search_chat", on_click=search_from_data(question))
 
-    def search():        
+    if st.session_state['question']!="":       
         st.session_state['question'] = question
         st.session_state['question'], st.session_state['response'], st.session_state[
             'context'], sources = llm_helper.get_semantic_answer_lang_chain(question, [])
