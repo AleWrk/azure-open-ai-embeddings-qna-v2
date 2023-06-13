@@ -211,10 +211,12 @@
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Enterprise_E10",
-                "capacity": 1
+                "capacity": 2
             },
             "zones": [
-                "1"                
+                "1",
+		"2",
+		"3"    
             ],
             "identity": {
                 "type": "None"
