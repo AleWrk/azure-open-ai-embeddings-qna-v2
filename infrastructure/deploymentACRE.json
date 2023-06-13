@@ -211,12 +211,10 @@
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Enterprise_E10",
-                "capacity": 2
+                "capacity": 1
             },
             "zones": [
-                "1",
-                "2",
-                "3"
+                "1"                
             ],
             "identity": {
                 "type": "None"
@@ -247,7 +245,7 @@
                 ],
                 "persistence": {
                     "aofEnabled": false,
-                    "rdbEnabled": false
+                    "rdbEnabled": true
                 }
             }
     },
