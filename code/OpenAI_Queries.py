@@ -104,9 +104,10 @@ def get_base64_of_bin_file(bin_file):
 def get_languages():
     return llm_helper.translator.get_available_languages()
 
+def search_from_data():
+    search()
 
 try:
-    default_prompt = ""
     default_question = ""
     default_answer = ""
 
@@ -134,7 +135,7 @@ try:
 	 Embedding testing application.
 	'''
     }
-    st.set_page_config(layout="wide", menu_items=menu_items)
+    st.set_page_config(layout="wide", menu_items=menu_items, page_title="Innovation - GenAI PoC", page_icon=":robot_face:")
 
     llm_helper = LLMHelper(custom_prompt=st.session_state.custom_prompt,
                            temperature=st.session_state.custom_temperature)
@@ -142,16 +143,7 @@ try:
     # Get available languages for translation
     available_languages = get_languages()
 
-    # Custom prompt variables
-    custom_prompt_placeholder = """{summaries}  
-    Rispondi in maniera discorsiva e completa alla domanda usando solo le informazioni presenti nel testo sopra. Se non riesci a trovarla, rispondi "Non presente nel testo".  
-    Question: {question}  
-    Answer:"""
-    custom_prompt_help = """You can configure a custom prompt by adding the variables {summaries} and {question} to the prompt.  
-    {summaries} will be replaced with the content of the documents retrieved from the VectorStore.  
-    {question} will be replaced with the user's question.
-        """    
-    
+     
     #col1, col2, col3 = st.columns([2, 2, 2])
     #with col3:
     #    with st.expander("Settings"):
@@ -185,7 +177,7 @@ try:
             st.session_state['tklen'] =st.tokens_response = st.slider(
                 "Tokens response length", 100, 1000, 500)
             aplychng = st.button("Apply", key="apply_chat", on_click=applycnfg)
-
+    
 
     show_pages_from_config()
     st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
@@ -194,10 +186,13 @@ try:
     st.header("In questa sezione è possibile effettuare una ricerca all'interno della knowledge base. La risposta sarà generata dal modello sulla base dei documenti elencati.\n\n")
     st.write("")
 
-    question = st.text_input("Inserire il testo da ricercare e premere invio", default_question)    
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        question = st.text_input("Inserire il testo da ricercare e premere invio", default_question)    
+    with col2:
+        st.button("Search", key="search_chat", on_click=search_from_data)
 
-    
-    if question != '':
+    def search():        
         st.session_state['question'] = question
         st.session_state['question'], st.session_state['response'], st.session_state[
             'context'], sources = llm_helper.get_semantic_answer_lang_chain(question, [])
@@ -211,8 +206,7 @@ try:
         st.divider()
         with st.expander("Testo passato nel contesto"):
             st.markdown(st.session_state['context'].replace('$', '\$'))            
-            st.markdown(f"FONTI: {sources}")
-
+            st.markdown(f"FONTI: {sources}")             
 
     #if st.session_state['translation_language'] and st.session_state['translation_language'] != '':
     #    st.write(f"Translation to other languages, 翻译成其他语言, النص باللغة العربية")

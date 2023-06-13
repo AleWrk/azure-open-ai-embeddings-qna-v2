@@ -1,5 +1,5 @@
 <style>
-    .css-x48z09 {
+    [data-testid="stSidebar"] {
         width: 250px !important;
     }
     header {
