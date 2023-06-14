@@ -49,4 +49,14 @@
         padding: 5px;
         top: 2px;
     }
+    [data-testid="stHorizontalBlock"] button {
+        background-color: #258900 !important;
+        color: white !important;
+        font-weight: bolder;
+        width: 100%;
+        position: relative;
+        bottom: 0;
+        top: 33px;
+    }
+    
 </style>

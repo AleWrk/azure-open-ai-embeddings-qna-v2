@@ -2,6 +2,16 @@ import streamlit as st
 import os
 import traceback
 from utilities.helper import LLMHelper
+from pathlib import Path
+
+def read_markdown_file(markdown_file):
+    return Path(markdown_file).read_text()
+
+@st.cache_resource()
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 try:
     # Set page layout to wide screen and menu item
@@ -14,7 +24,9 @@ try:
 	Document Reader Sample Demo.
 	'''
     }
-    st.set_page_config(layout="wide", menu_items=menu_items)
+    st.set_page_config(layout="wide", page_title="Innovation - GenAI PoC", page_icon=":robot_face:")
+
+    st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
 
     hide_streamlit_style = """
                 <style>

@@ -9,6 +9,7 @@ from utilities.helper import LLMHelper
 import uuid
 from redis.exceptions import ResponseError 
 from urllib import parse
+from pathlib import Path
     
 def upload_text_and_embeddings():
     file_name = f"{uuid.uuid4()}.txt"
@@ -47,6 +48,14 @@ def upload_file(bytes_data: bytes, file_name: str):
     charset = f"; charset={chardet.detect(bytes_data)['encoding']}" if content_type == 'text/plain' else ''
     st.session_state['file_url'] = llm_helper.blob_client.upload_file(bytes_data, st.session_state['filename'], content_type=content_type+charset)
 
+def read_markdown_file(markdown_file):
+    return Path(markdown_file).read_text()
+
+@st.cache_resource()
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 try:    
     # Set page layout to wide screen and menu item
@@ -58,7 +67,9 @@ try:
 	 Embedding testing application.
 	'''
     }
-    st.set_page_config(layout="wide", menu_items=menu_items)
+    st.set_page_config(layout="wide", page_title="Innovation - GenAI PoC", page_icon=":robot_face:")
+
+    st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
 
     llm_helper = LLMHelper()
 
