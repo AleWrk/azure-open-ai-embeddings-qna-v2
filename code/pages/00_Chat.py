@@ -56,6 +56,9 @@ if 'generated' not in st.session_state:
 if 'past' not in st.session_state:
     st.session_state['past'] = ['Ciao!']
 
+print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+print(st.session_state['question'])
+
 st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
 
 st.title("Generative Chatbot")
@@ -72,6 +75,7 @@ def generate_response():
         response = re.split('fonti utilizzate:', result, flags=re.IGNORECASE)
         result = response[0]
         refs = ""
+        
         if len(response) > 1:
             refs = "Riferimenti:"
             refs += response[1].replace('.txt', '')
@@ -91,6 +95,7 @@ js = f"""
 </script>
 """
 
+
 response_container = st.container()
 input_container = st.container()
 
@@ -99,17 +104,23 @@ with input_container:
     col1, col2 = st.columns([5, 1])
     with col1:
         input = st.text_input("Digita il testo e premi invio. Utilizza il pulsante per pulire il contesto della chat.", key="question")
+        
     with col2:
         st.button("Pulisci Chat", on_click=clear_chat_data)
 
 with response_container:
+
     if st.session_state['question']!="":
         response = generate_response()
         print('sto appendendo la domanda: ', st.session_state['question'])
         st.session_state.past.append(st.session_state['question'])
         st.session_state.generated.append(response)
         
+        
+        
+        
     if st.session_state['generated']:
+        
         for i in range(len(st.session_state['generated'])):
             message(st.session_state['past'][i], is_user=True, key=str(i) + '_user', avatar_style="adventurer")
             message(st.session_state["generated"][i], key=str(i), avatar_style="shapes")

@@ -88,7 +88,7 @@ try:
     st.session_state.run = False
     col1, col2 = st.columns([5, 1])
     with col1:
-        question = st.text_input("Inserire il testo da ricercare e premere Cerca", default_question)    
+        question = st.text_input("Inserire il testo da ricercare e premere Cerca", )    
     with col2:
         st.button("Cerca", key="search_chat", on_click=search_from_data(question), disabled=st.session_state.run)
     
@@ -109,7 +109,7 @@ try:
                 st.markdown(responses[1].replace('.txt', ''))
             st.divider()
             st.markdown(f'\n\n**Testi consultati dal modello:**\n')
-            
+            st.session_state['question']=""
             for index, source in enumerate(sorted(sources.split())):
                 annotated_text((source, 'PDF', "#b3d6fb"))
             st.divider()
