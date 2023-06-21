@@ -33,7 +33,7 @@ try:
     }
     st.set_page_config(layout="wide", page_title="Innovation - GenAI PoC", page_icon=":robot_face:")
 
-    st.markdown(read_markdown_file("markdown/styles.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
+    st.markdown(read_markdown_file("markdown/styles-nobutton.md").replace('{img-isp}', get_base64_of_bin_file(os.path.join('images', 'isp-logo.png'))).replace('{img-isl}', get_base64_of_bin_file(os.path.join('images', 'isl-logo.png'))).replace('{title}',os.environ['POC_TITLE']), unsafe_allow_html=True)
 
     llm_helper = LLMHelper()
 
