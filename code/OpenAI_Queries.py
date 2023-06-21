@@ -53,7 +53,7 @@ try:
 	    Demo Generative AI Made with :heart: by Innovation Team
 	    '''
     }
-    st.set_page_config(layout="wide", menu_items=menu_items, page_title="Innovation - GenAI PoC", page_icon=":robot_face:")
+    st.set_page_config(layout="wide", menu_items=menu_items, page_title="Innovation & Processes - GenAI PoC", page_icon=":robot_face:")
 
     llm_helper = LLMHelper(custom_prompt=st.session_state.custom_prompt,
                            temperature=st.session_state.custom_temperature)
