@@ -4,19 +4,26 @@ import os
 import traceback
 import logging
 import re
+import time
 from pathlib import Path
 from annotated_text import annotated_text
 
 import streamlit as st
 from dotenv import load_dotenv
 from st_pages import add_page_title, show_pages_from_config
+
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+
 from utilities.helper import LLMHelper
 
 load_dotenv()
 
 
-logger = logging.getLogger(
-    'azure.core.pipeline.policies.http_logging_policy').setLevel(logging.WARNING)
+#logger = logging.getLogger(
+#    'azure.core.pipeline.policies.http_logging_policy').setLevel(logging.WARNING)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(AzureLogHandler())
 
 
 def read_markdown_file(markdown_file):
@@ -120,3 +127,24 @@ try:
 
 except Exception:
     st.error(traceback.format_exc())
+
+def send_ok():
+
+    #properties = {'CustomDimensions': 'test'}
+    properties = {'custom_dimensions': {'timestamp': time.time(), 'feed': 'ok', 'answer':question, 'response':st.session_state['response']}}
+
+    # Use properties in logging statements
+    logger.warning('FEEDBACKS', extra=properties)
+    print("logged0K")
+
+def send_ko():
+
+    #properties = {'CustomDimensions': 'test'}
+    properties = {'custom_dimensions': {'timestamp': time.time(), 'feed': 'ko', 'answer':question, 'response':st.session_state['response']}}
+
+    # Use properties in logging statements
+    logger.warning('FEEDBACKS', extra=properties)
+    print("loggedK0")
+
+st.button("OK",  on_click=send_ok)
+st.button("KO",  on_click=send_ko)
