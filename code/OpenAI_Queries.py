@@ -50,6 +50,12 @@ try:
     if 'custom_temperature' not in st.session_state:
         st.session_state['custom_temperature'] = float(
             os.getenv("OPENAI_TEMPERATURE", 0.7))
+    if 'is_ko' not in st.session_state:
+        st.session_state['is_ko'] = False
+    if 'expected_question' not in st.session_state:
+        st.session_state['expected_question'] = ""
+    if 'feed_form' not in st.session_state:
+        st.session_state['feed_form'] = False
         
 
     # Set page layout to wide screen and menu item
@@ -120,7 +126,7 @@ try:
             for index, source in enumerate(sorted(sources.split())):
                 annotated_text((source, 'PDF', "#b3d6fb"))
             st.divider()
-
+            st.session_state['feed_form'] = True
             with st.expander("Testo passato nel contesto"):
                 st.markdown(st.session_state['context'].replace('$', '\$'))            
                 st.markdown(f"FONTI: {sources}")        
@@ -136,15 +142,29 @@ def send_ok():
     # Use properties in logging statements
     logger.warning('FEEDBACKS', extra=properties)
     print("logged0K")
+    st.session_state['feed_form']=False
 
 def send_ko():
-
-    #properties = {'CustomDimensions': 'test'}
-    properties = {'custom_dimensions': {'timestamp': time.time(), 'feed': 'ko', 'answer':question, 'response':st.session_state['response']}}
-
+    st.session_state['is_ko']=True
+    print("loggedK0")
+    
+def snd_ko():
+    print("now send")
+    st.session_state['is_ko']=False
+    print (st.session_state['expected_question'])
+    properties = {'custom_dimensions': {'timestamp': time.time(), 'feed': 'ko', 'answer':question, 'response':st.session_state['response'], 'needed':st.session_state['expected_question']}}
     # Use properties in logging statements
     logger.warning('FEEDBACKS', extra=properties)
-    print("loggedK0")
+    st.session_state['expected_question']=""
+    st.session_state['feed_form']=False
 
-st.button("OK",  on_click=send_ok)
-st.button("KO",  on_click=send_ko)
+if (st.session_state['feed_form'] == True):
+    st.button("OK",  on_click=send_ok)
+    st.button("KO",  on_click=send_ko)
+
+    if (st.session_state['is_ko']==True):
+        st.session_state['expected_question'] = st.text_input("Cosa ti aspettavi come risposta?")
+        st.button("invia",  on_click=snd_ko)
+
+
+
